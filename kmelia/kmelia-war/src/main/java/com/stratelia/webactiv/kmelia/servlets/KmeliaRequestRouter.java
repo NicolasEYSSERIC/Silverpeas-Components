@@ -1254,16 +1254,39 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (kmelia.isCloneNeeded()) {
           kmelia.clonePublication();
         }
+        
+        PublicationDetail publication = kmelia.getSessionPubliOrClone().getDetail();
+        
         // put current publication
-        request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPubliOrClone().
-            getDetail());
+        request.setAttribute("PublicationDetail", publication);
 
         // Parametres du Wizard
         setWizardParams(request, kmelia);
+        
+        List<String> publicationLanguages = kmelia.getPublicationLanguages(); // languages of
+        // publication
+        // header and attachments
+        if (publicationLanguages.contains(kmelia.getCurrentLanguage())) {
+          request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
+        } else {
+          request.setAttribute("ContentLanguage", checkLanguage(kmelia, publication));
+        }
+        request.setAttribute("Languages", publicationLanguages);
+        
         request.setAttribute("Language", kmelia.getContentLanguage());
         request.setAttribute("CurrentLanguage", kmelia.getContentLanguage());
+        
+        request.setAttribute("Path", kmelia.getSessionPath());
 
-        destination = rootDestination + "toWysiwyg.jsp";
+        destination = rootDestination + "wysiwyg.jsp";
+      } else if ("SaveWysiwyg".equals(function)) {
+        String content = request.getParameter("Content");
+        
+        kmelia.saveWYSIWYGContent(content);
+        
+        request.setAttribute("PubId", kmelia.getSessionPublication().getId());
+        destination = getDestination("ViewPublication", kmelia, request);
+        
       } else if ("FromWysiwyg".equals(function)) {
         String id = request.getParameter("PubId");
 

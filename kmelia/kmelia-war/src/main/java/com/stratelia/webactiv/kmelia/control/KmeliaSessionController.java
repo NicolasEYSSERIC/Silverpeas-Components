@@ -3927,7 +3927,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           } else {
             nodeName = nodeInPath.getName();
           }
-          linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(
+          linkedPathString.append("<a href=\"javascript:onclick=topicGoTo('").append(
               nodeInPath.getNodePK().getId()).append("')\">").append(
               EncodeHelper.javaStringToHtmlString(nodeName)).append("</a>");
           pathString.append(EncodeHelper.javaStringToHtmlString(nodeName));
@@ -4444,5 +4444,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     subscriptionContext
         .initializeFromNode(NodeSubscriptionResource.from(getCurrentFolderPK()), nodePath);
     return subscriptionContext.getDestinationUrl();
+  }
+  
+  public void saveWYSIWYGContent(String html) {
+    WysiwygController.save(html, getComponentId(), getSessionPubliOrClone().getId(), getUserId(),
+        getCurrentLanguage(), false);
   }
 }
