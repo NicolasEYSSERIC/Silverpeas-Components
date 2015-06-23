@@ -1319,8 +1319,12 @@ public class KmeliaBmEJB implements KmeliaBm {
    * @param pubDetail
    * @return true if status has changed, false otherwise
    */
-  private boolean changePublicationStatusOnUpdate(PublicationDetail pubDetail) {
-    String oldStatus = pubDetail.getStatus();
+  private boolean changePublicationStatusOnUpdate(PublicationDetail old,
+      PublicationDetail pubDetail) {
+    String oldStatus = old.getStatus();
+    if (!StringUtil.isDefined(pubDetail.getStatus())) {
+      pubDetail.setStatus(oldStatus);
+    }
     String newStatus = oldStatus;
 
     List<NodePK> fathers = (List<NodePK>) getPublicationFathers(pubDetail.getPK());
@@ -1387,7 +1391,7 @@ public class KmeliaBmEJB implements KmeliaBm {
         // update only updateDate
         publicationBm.setDetail(pubDetail, forceUpdateDate);
       } else {
-        boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
+        boolean statusChanged = changePublicationStatusOnUpdate(old, pubDetail);
         publicationBm.setDetail(pubDetail, forceUpdateDate);
 
         if (!isPublicationInBasket) {
